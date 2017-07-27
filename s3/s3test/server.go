@@ -758,6 +758,14 @@ func (objr objectResource) put(a *action) interface{} {
 		partNumber = uint(number)
 	}
 
+	if len(a.req.TransferEncoding) > 0 && a.req.TransferEncoding[0] == "chunked" {
+		fatalf(400, "NotImplemented", "Chunked transfer encoding is not supported")
+	} else if cl := a.req.Header.Get("Content-Length"); cl == "" {
+		fatalf(400, "MissingHeader", "Request had no Content-Length header")
+	} else if _, err := strconv.ParseUint(cl, 10, 64); err != nil {
+		fatalf(400, "InvalidHeader", "Unparseable Content-Length header %q", cl)
+	}
+
 	var expectHash []byte
 	if c := a.req.Header.Get("Content-MD5"); c != "" {
 		var err error

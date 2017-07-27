@@ -1197,9 +1197,15 @@ func (s3 *S3) setupHttpRequest(req *request) (*http.Request, error) {
 		Form:       req.params,
 	}
 
-	if v, ok := req.headers["Content-Length"]; ok {
+	if v, ok := req.headers["Content-Length"]; ok && len(v) > 0 {
 		hreq.ContentLength, _ = strconv.ParseInt(v[0], 10, 64)
-		delete(req.headers, "Content-Length")
+		if hreq.ContentLength == 0 {
+			// In Go 1.8, Body must be nil or http.NoBody
+			// in order for the Content-Length header to
+			// be sent as "0"; otherwise it is omitted,
+			// and AWS rejects the request.
+			req.payload = nil
+		}
 	}
 	if req.payload != nil {
 		hreq.Body = ioutil.NopCloser(req.payload)
