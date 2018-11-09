@@ -1163,8 +1163,9 @@ func (s3 *S3) prepare(req *request) error {
 		signer.Sign(hreq)
 
 		req.payload = hreq.Body
-		if _, ok := headers["Content-Length"]; ok {
-			req.headers["Content-Length"] = headers["Content-Length"]
+		if v := headers.Get("Content-Length"); v != "" {
+			// Restore header removed by setupHttpRequest
+			req.headers.Set("Content-Length", v)
 		}
 	}
 	return nil
@@ -1197,8 +1198,9 @@ func (s3 *S3) setupHttpRequest(req *request) (*http.Request, error) {
 		Form:       req.params,
 	}
 
-	if v, ok := req.headers["Content-Length"]; ok && len(v) > 0 {
-		hreq.ContentLength, _ = strconv.ParseInt(v[0], 10, 64)
+	if v := hreq.Header.Get("Content-Length"); v != "" {
+		hreq.Header.Del("Content-Length")
+		hreq.ContentLength, _ = strconv.ParseInt(v, 10, 64)
 		if hreq.ContentLength == 0 {
 			// In Go 1.8, Body must be nil or http.NoBody
 			// in order for the Content-Length header to
