@@ -74,6 +74,7 @@ type Options struct {
 	ContentDisposition   string
 	Range                string
 	StorageClass         StorageClass
+	ContentSHA256        string
 	// What else?
 }
 
@@ -473,7 +474,9 @@ func (o Options) addHeaders(headers map[string][]string) {
 	}
 	if len(o.StorageClass) != 0 {
 		headers["x-amz-storage-class"] = []string{string(o.StorageClass)}
-
+	}
+	if len(o.ContentSHA256) != 0 {
+		headers["x-amz-content-sha256"] = []string{o.ContentSHA256}
 	}
 	for k, v := range o.Meta {
 		headers["x-amz-meta-"+k] = v

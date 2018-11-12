@@ -198,6 +198,8 @@ func (s *V4Signer) Sign(req *http.Request) {
 		req.Form["X-Amz-Credential"] = []string{s.auth.AccessKey + "/" + s.credentialScope(t)}
 		req.Form["X-Amz-Date"] = []string{t.Format(ISO8601BasicFormat)}
 		req.URL.RawQuery = req.Form.Encode()
+	} else if phh := req.Header["x-amz-content-sha256"]; len(phh) > 0 && phh[0] != "" {
+		payloadHash = phh[0]
 	} else {
 		payloadHash = s.payloadHash(req)
 		if s.IncludeXAmzContentSha256 {
