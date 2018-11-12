@@ -383,7 +383,7 @@ func (s *V4Signer) signedHeaders(h http.Header) string {
 func (s *V4Signer) payloadHash(req *http.Request) string {
 	var b []byte
 	if req.Body == nil {
-		b = []byte("")
+		return s.hash("")
 	} else {
 		var err error
 		b, err = ioutil.ReadAll(req.Body)
