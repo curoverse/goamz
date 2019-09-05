@@ -130,7 +130,7 @@ func (s *Route53Signer) getHeaderAuthorize(message string) string {
 // Adds all the required headers for AWS Route53 API to the request
 // including the authorization
 func (s *Route53Signer) Sign(req *http.Request) {
-	date := time.Now().UTC().Format(time.RFC1123)
+	date := time.Now().UTC().Format(time.RFC1123Z)
 	delete(req.Header, "Date")
 	req.Header.Set("Date", date)
 

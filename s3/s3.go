@@ -1151,7 +1151,7 @@ func (s3 *S3) prepare(req *request) error {
 			signpathPartiallyEscaped = "/" + req.bucket + signpathPartiallyEscaped
 		}
 		req.headers["Host"] = []string{u.Host}
-		req.headers["Date"] = []string{time.Now().In(time.UTC).Format(time.RFC1123)}
+		req.headers["Date"] = []string{time.Now().In(time.UTC).Format(time.RFC1123Z)}
 
 		sign(s3.Auth, req.method, signpathPartiallyEscaped, req.params, req.headers)
 	} else {
